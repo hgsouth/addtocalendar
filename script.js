@@ -159,7 +159,8 @@
       params.set("dates", `${start}/${end}`);
     }
 
-    if (ev.description) params.set("details", ev.description);
+    const details = descriptionWithMap(ev.description, ev.location);
+    if (details) params.set("details", details);
     if (ev.location) params.set("location", ev.location);
 
     return `https://www.google.com/calendar/render?${params.toString()}`;
@@ -181,7 +182,8 @@
       params.set("enddt", toIsoLocal(ev.endDate, ev.endTime));
     }
 
-    if (ev.description) params.set("body", ev.description);
+    const body = descriptionWithMap(ev.description, ev.location);
+    if (body) params.set("body", body);
     if (ev.location) params.set("location", ev.location);
 
     return `${base}?${params.toString()}`;
@@ -204,7 +206,8 @@
       params.set("et", toUtcString(ev.endDate, ev.endTime, ev.timezone));
     }
 
-    if (ev.description) params.set("desc", ev.description);
+    const desc = descriptionWithMap(ev.description, ev.location);
+    if (desc) params.set("desc", desc);
     if (ev.location) params.set("in_loc", ev.location);
 
     return `https://calendar.yahoo.com/?${params.toString()}`;
@@ -238,7 +241,8 @@
       `SUMMARY:${escapeIcs(ev.title)}`,
     ];
 
-    if (ev.description) lines.push(`DESCRIPTION:${escapeIcs(ev.description)}`);
+    const icsDesc = descriptionWithMap(ev.description, ev.location);
+    if (icsDesc) lines.push(`DESCRIPTION:${escapeIcs(icsDesc)}`);
     if (ev.location) lines.push(`LOCATION:${escapeIcs(ev.location)}`);
 
     lines.push("END:VEVENT", "END:VCALENDAR");
@@ -340,6 +344,26 @@
       String(d.getUTCSeconds()).padStart(2, "0") +
       "Z"
     );
+  }
+
+  // ── Location / Maps Helpers ──
+  function isUrl(str) {
+    return /^https?:\/\//i.test(str);
+  }
+
+  function buildMapsUrl(location) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+  }
+
+  /**
+   * If the location is a physical address (not a URL), append a Google Maps
+   * link to the description so calendar recipients can tap through to a map.
+   */
+  function descriptionWithMap(description, location) {
+    if (!location || isUrl(location)) return description;
+    const mapsLink = buildMapsUrl(location);
+    const mapLine = `Map: ${mapsLink}`;
+    return description ? `${description}\n\n${mapLine}` : mapLine;
   }
 
   // ── String Helpers ──
