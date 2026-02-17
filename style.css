@@ -142,13 +142,14 @@ textarea {
 }
 
 .toggle-label {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   gap: 10px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   user-select: none;
+  margin-bottom: 0;
 }
 
 .toggle-label input[type="checkbox"] {
