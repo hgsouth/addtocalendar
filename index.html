@@ -182,6 +182,25 @@
         <div class="snippet-section">
           <h3>HTML Snippet</h3>
           <p>Paste this into any webpage to give visitors a set of "Add to Calendar" buttons — no dependencies required.</p>
+
+          <div class="snippet-options">
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Text</span>
+              <label class="snippet-opt"><input type="radio" name="snippetText" value="addto" checked /> With "Add to"</label>
+              <label class="snippet-opt"><input type="radio" name="snippetText" value="plain" /> Name only</label>
+            </div>
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Width</span>
+              <label class="snippet-opt"><input type="radio" name="snippetWidth" value="auto" checked /> Auto</label>
+              <label class="snippet-opt"><input type="radio" name="snippetWidth" value="full" /> Full width</label>
+            </div>
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Look</span>
+              <label class="snippet-opt"><input type="radio" name="snippetLook" value="filled" checked /> Filled</label>
+              <label class="snippet-opt"><input type="radio" name="snippetLook" value="outline" /> Outline</label>
+            </div>
+          </div>
+
           <div class="snippet-preview" id="snippetPreview" aria-label="Button preview"></div>
           <textarea id="htmlSnippet" class="snippet-textarea" readonly rows="7" spellcheck="false"></textarea>
           <button class="btn-copy-html" id="copyHtmlSnippet">&#128203; Copy HTML</button>

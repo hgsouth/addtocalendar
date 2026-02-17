@@ -4,6 +4,9 @@
   // ── DOM References ──
   const form = document.getElementById("eventForm");
   const outputSection = document.getElementById("outputSection");
+
+  // ── Snippet state (preserved across style-option changes) ──
+  let currentIcsContent = "";
   const allDayCheckbox = document.getElementById("allDay");
   const startTimeGroup = document.getElementById("startTimeGroup");
   const endTimeGroup = document.getElementById("endTimeGroup");
@@ -77,6 +80,12 @@
     document.querySelectorAll(".btn-copy-url").forEach((btn) => {
       btn.addEventListener("click", handleCopyUrl);
     });
+
+    document.querySelectorAll('input[name^="snippet"]').forEach((input) => {
+      input.addEventListener("change", () => {
+        if (!outputSection.hidden) refreshSnippet();
+      });
+    });
   }
 
   function toggleAllDay() {
@@ -119,13 +128,8 @@
     };
 
     // HTML Snippet
-    const htmlSnippet = buildHtmlSnippet(googleUrl, outlookUrl, yahooUrl, icsContent);
-    document.getElementById("htmlSnippet").value = htmlSnippet;
-    document.getElementById("snippetPreview").innerHTML = htmlSnippet;
-    document.getElementById("copyHtmlSnippet").onclick = () => {
-      copyToClipboard(htmlSnippet);
-      showToast("HTML snippet copied!");
-    };
+    currentIcsContent = icsContent;
+    refreshSnippet();
 
     // Show output
     outputSection.hidden = false;
@@ -393,6 +397,32 @@
     return description ? `${description}\n\n${mapLine}` : mapLine;
   }
 
+  // ── Snippet Refresh ──
+  function getSnippetOpts() {
+    const radio = (name) =>
+      document.querySelector(`input[name="${name}"]:checked`).value;
+    return {
+      addTo:      radio("snippetText")  === "addto",
+      fullWidth:  radio("snippetWidth") === "full",
+      outline:    radio("snippetLook")  === "outline",
+    };
+  }
+
+  function refreshSnippet() {
+    const googleUrl  = document.getElementById("googleLink").href;
+    const outlookUrl = document.getElementById("outlookLink").href;
+    const yahooUrl   = document.getElementById("yahooLink").href;
+    const snippet = buildHtmlSnippet(
+      googleUrl, outlookUrl, yahooUrl, currentIcsContent, getSnippetOpts()
+    );
+    document.getElementById("htmlSnippet").value = snippet;
+    document.getElementById("snippetPreview").innerHTML = snippet;
+    document.getElementById("copyHtmlSnippet").onclick = () => {
+      copyToClipboard(snippet);
+      showToast("HTML snippet copied!");
+    };
+  }
+
   // ── HTML Snippet Builder ──
   /**
    * Escape a string for use inside an HTML attribute value (double-quoted).
@@ -409,31 +439,48 @@
    * Build a self-contained HTML snippet with inline-styled "Add to Calendar"
    * buttons for all four providers. The ICS button uses a data: URI so it
    * works without a server.
+   *
+   * opts: { addTo: bool, fullWidth: bool, outline: bool }
    */
-  function buildHtmlSnippet(googleUrl, outlookUrl, yahooUrl, icsContent) {
+  function buildHtmlSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts = {}) {
+    const { addTo = true, fullWidth = false, outline = false } = opts;
+
     const icsHref =
       "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
 
-    const base =
-      "display:inline-block;padding:10px 20px;color:#ffffff;" +
-      "text-decoration:none;border-radius:6px;font-size:14px;" +
-      "font-weight:600;font-family:sans-serif;line-height:1.2;";
+    const prefix = addTo ? "Add to " : "";
+    const entries = [
+      { href: googleUrl,  color: "#4285f4", label: prefix + "Google Calendar",  download: false },
+      { href: outlookUrl, color: "#0078d4", label: prefix + "Office\u00a0365",  download: false },
+      { href: yahooUrl,   color: "#6001d2", label: prefix + "Yahoo Calendar",   download: false },
+      { href: icsHref,    color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", download: true },
+    ];
 
-    function link(href, bg, label, extra) {
-      const style = base + "background:" + bg + ";" + (extra || "");
-      return `<a href="${escHtmlAttr(href)}" target="_blank" rel="noopener" style="${style}">${label}</a>`;
+    const base =
+      "text-decoration:none;border-radius:6px;font-size:14px;" +
+      "font-weight:600;font-family:sans-serif;line-height:1.2;text-align:center;" +
+      (fullWidth
+        ? "display:block;width:100%;padding:10px 20px;box-sizing:border-box;"
+        : "display:inline-block;padding:10px 20px;");
+
+    function btnStyle(color) {
+      return outline
+        ? `${base}color:${color};background:#ffffff;border:2px solid ${color};`
+        : `${base}color:#ffffff;background:${color};border:none;`;
     }
 
-    const icsLink = `<a href="${escHtmlAttr(icsHref)}" download="event.ics" style="${base}background:#1c1c1e;">Add to Apple\u00a0/\u00a0ICS</a>`;
+    const wrapStyle = fullWidth
+      ? "display:flex;flex-direction:column;gap:8px;"
+      : "display:flex;flex-wrap:wrap;gap:8px;";
 
-    const buttons = [
-      link(googleUrl, "#4285f4", "Add to Google Calendar"),
-      link(outlookUrl, "#0078d4", "Add to Office\u00a0365"),
-      link(yahooUrl, "#6001d2", "Add to Yahoo Calendar"),
-      icsLink,
-    ].join("\n  ");
+    const buttons = entries.map(({ href, color, label, download }) => {
+      const extra = download
+        ? ' download="event.ics"'
+        : ' target="_blank" rel="noopener"';
+      return `<a href="${escHtmlAttr(href)}"${extra} style="${btnStyle(color)}">${label}</a>`;
+    }).join("\n  ");
 
-    return `<div style="display:flex;flex-wrap:wrap;gap:8px;">\n  ${buttons}\n</div>`;
+    return `<div style="${wrapStyle}">\n  ${buttons}\n</div>`;
   }
 
   // ── String Helpers ──

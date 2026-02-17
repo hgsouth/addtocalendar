@@ -420,6 +420,53 @@ textarea {
   margin-bottom: 14px;
 }
 
+.snippet-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-bottom: 16px;
+}
+
+.snippet-opt-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.snippet-opt-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 2px;
+}
+
+.snippet-opt {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.snippet-opt input[type="radio"] {
+  display: none;
+}
+
+.snippet-opt:has(input:checked) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(74, 108, 247, 0.07);
+}
+
 .snippet-preview {
   display: flex;
   flex-wrap: wrap;
