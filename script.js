@@ -167,9 +167,11 @@
   }
 
   // ── Office 365 / Outlook ──
+  // Uses the deeplink/compose endpoint (outlook.office.com)
   function buildOutlookUrl(ev) {
-    const base = "https://outlook.live.com/calendar/0/action/compose";
+    const base = "https://outlook.office.com/calendar/deeplink/compose";
     const params = new URLSearchParams();
+    params.set("path", "/calendar/action/compose");
     params.set("rru", "addevent");
     params.set("subject", ev.title);
 
@@ -178,8 +180,9 @@
       params.set("enddt", addDays(ev.endDate, 1));
       params.set("allday", "true");
     } else {
-      params.set("startdt", toIsoLocal(ev.startDate, ev.startTime));
-      params.set("enddt", toIsoLocal(ev.endDate, ev.endTime));
+      // Outlook deeplink expects UTC ISO dates with Z suffix
+      params.set("startdt", toIsoUtc(ev.startDate, ev.startTime, ev.timezone));
+      params.set("enddt", toIsoUtc(ev.endDate, ev.endTime, ev.timezone));
     }
 
     const body = descriptionWithMap(ev.description, ev.location);
@@ -330,6 +333,21 @@
 
   function toIsoLocal(dateStr, timeStr) {
     return `${dateStr}T${timeStr}:00`;
+  }
+
+  /**
+   * Convert local date + time + timezone to ISO 8601 UTC string: YYYY-MM-DDTHH:mm:ssZ
+   * Used by the Outlook deeplink endpoint.
+   */
+  function toIsoUtc(dateStr, timeStr, timezone) {
+    const compact = toUtcString(dateStr, timeStr, timezone); // YYYYMMDDTHHmmssZ
+    const y = compact.slice(0, 4);
+    const mo = compact.slice(4, 6);
+    const d = compact.slice(6, 8);
+    const h = compact.slice(9, 11);
+    const mi = compact.slice(11, 13);
+    const s = compact.slice(13, 15);
+    return `${y}-${mo}-${d}T${h}:${mi}:${s}Z`;
   }
 
   function formatIcsUtcNow() {
