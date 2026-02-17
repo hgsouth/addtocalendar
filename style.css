@@ -401,6 +401,67 @@ textarea {
   color: var(--color-primary);
 }
 
+/* ─── HTML Snippet Section ─── */
+.snippet-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.snippet-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.snippet-section > p {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 14px;
+}
+
+.snippet-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.snippet-textarea {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: none;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.btn-copy-html {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-copy-html:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 /* ─── Toast ─── */
 .toast {
   position: fixed;

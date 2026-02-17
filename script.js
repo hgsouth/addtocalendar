@@ -118,6 +118,15 @@
       showToast("ICS content copied!");
     };
 
+    // HTML Snippet
+    const htmlSnippet = buildHtmlSnippet(googleUrl, outlookUrl, yahooUrl, icsContent);
+    document.getElementById("htmlSnippet").value = htmlSnippet;
+    document.getElementById("snippetPreview").innerHTML = htmlSnippet;
+    document.getElementById("copyHtmlSnippet").onclick = () => {
+      copyToClipboard(htmlSnippet);
+      showToast("HTML snippet copied!");
+    };
+
     // Show output
     outputSection.hidden = false;
     outputSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -382,6 +391,49 @@
     const mapsLink = buildMapsUrl(location);
     const mapLine = `Map: ${mapsLink}`;
     return description ? `${description}\n\n${mapLine}` : mapLine;
+  }
+
+  // ── HTML Snippet Builder ──
+  /**
+   * Escape a string for use inside an HTML attribute value (double-quoted).
+   */
+  function escHtmlAttr(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  /**
+   * Build a self-contained HTML snippet with inline-styled "Add to Calendar"
+   * buttons for all four providers. The ICS button uses a data: URI so it
+   * works without a server.
+   */
+  function buildHtmlSnippet(googleUrl, outlookUrl, yahooUrl, icsContent) {
+    const icsHref =
+      "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
+
+    const base =
+      "display:inline-block;padding:10px 20px;color:#ffffff;" +
+      "text-decoration:none;border-radius:6px;font-size:14px;" +
+      "font-weight:600;font-family:sans-serif;line-height:1.2;";
+
+    function link(href, bg, label, extra) {
+      const style = base + "background:" + bg + ";" + (extra || "");
+      return `<a href="${escHtmlAttr(href)}" target="_blank" rel="noopener" style="${style}">${label}</a>`;
+    }
+
+    const icsLink = `<a href="${escHtmlAttr(icsHref)}" download="event.ics" style="${base}background:#1c1c1e;">Add to Apple\u00a0/\u00a0ICS</a>`;
+
+    const buttons = [
+      link(googleUrl, "#4285f4", "Add to Google Calendar"),
+      link(outlookUrl, "#0078d4", "Add to Office\u00a0365"),
+      link(yahooUrl, "#6001d2", "Add to Yahoo Calendar"),
+      icsLink,
+    ].join("\n  ");
+
+    return `<div style="display:flex;flex-wrap:wrap;gap:8px;">\n  ${buttons}\n</div>`;
   }
 
   // ── String Helpers ──
