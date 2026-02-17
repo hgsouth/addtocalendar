@@ -401,10 +401,12 @@
   function getSnippetOpts() {
     const radio = (name) =>
       document.querySelector(`input[name="${name}"]:checked`).value;
+    const look = radio("snippetLook");
     return {
-      addTo:      radio("snippetText")  === "addto",
-      fullWidth:  radio("snippetWidth") === "full",
-      outline:    radio("snippetLook")  === "outline",
+      addTo:     radio("snippetText")  === "addto",
+      fullWidth: radio("snippetWidth") === "full",
+      outline:   look === "outline",
+      icons:     look === "icons",
     };
   }
 
@@ -435,14 +437,85 @@
       .replace(/>/g, "&gt;");
   }
 
+  // ── Icon Snippet Builder ──
+  /**
+   * Return a base64 SVG data URI for a 45×45 calendar icon with the given
+   * brand background colour.
+   */
+  function calIconUri(bg) {
+    const svg =
+      `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45">` +
+      `<rect width="45" height="45" rx="8" fill="${bg}"/>` +
+      `<rect x="11" y="15" width="23" height="19" rx="2" fill="none" stroke="#fff" stroke-width="2"/>` +
+      `<line x1="11" y1="22" x2="34" y2="22" stroke="#fff" stroke-width="2"/>` +
+      `<line x1="18" y1="12" x2="18" y2="18" stroke="#fff" stroke-width="2" stroke-linecap="round"/>` +
+      `<line x1="27" y1="12" x2="27" y2="18" stroke="#fff" stroke-width="2" stroke-linecap="round"/>` +
+      `</svg>`;
+    return "data:image/svg+xml;base64," + btoa(svg);
+  }
+
+  /** Yahoo icon: purple background + bold "Y!" text. */
+  function yahooIconUri() {
+    const svg =
+      `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45">` +
+      `<rect width="45" height="45" rx="8" fill="#6001d2"/>` +
+      `<text x="22.5" y="31" font-family="Arial,sans-serif" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">Y!</text>` +
+      `</svg>`;
+    return "data:image/svg+xml;base64," + btoa(svg);
+  }
+
+  /**
+   * Build the email-safe icon-style snippet.
+   * Mirrors the AddEvent.com pattern: optional <p> title, then
+   * <p style="font-size:0"> containing inline <a><img></a> links.
+   */
+  function buildIconSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts) {
+    const { addTo } = opts;
+    const icsHref = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
+
+    const imgStyle = "width:45px;height:45px;display:inline;margin:0 4px;";
+    const aStyle   = "display:inline;";
+
+    const icons = [
+      { href: googleUrl,  src: calIconUri("#4285f4"), alt: "Google Calendar", download: false },
+      { href: outlookUrl, src: calIconUri("#0078d4"), alt: "Office 365",      download: false },
+      { href: yahooUrl,   src: yahooIconUri(),        alt: "Yahoo Calendar",  download: false },
+      { href: icsHref,    src: calIconUri("#1c1c1e"), alt: "Apple / ICS",     download: true  },
+    ];
+
+    const iconLinks = icons.map(({ href, src, alt, download }) => {
+      const extra = download ? ` download="event.ics"` : ` target="_blank" rel="noopener"`;
+      return (
+        `<a href="${escHtmlAttr(href)}"${extra} title="${alt}" style="${aStyle}">` +
+        `<img src="${src}" alt="${alt}" width="45" height="45" border="0" style="${imgStyle}" />` +
+        `</a>`
+      );
+    }).join("\n  ");
+
+    const titleP = addTo
+      ? `<p style="margin:0 0 10px 0;text-align:center;font-size:16px;font-weight:bold;font-family:sans-serif;color:#000000;">Add to your calendar</p>\n`
+      : "";
+
+    return (
+      titleP +
+      `<p style="margin:0;text-align:center;font-size:0;">\n` +
+      `  ${iconLinks}\n` +
+      `</p>`
+    );
+  }
+
   /**
    * Build a self-contained HTML snippet with inline-styled "Add to Calendar"
    * buttons for all four providers. The ICS button uses a data: URI so it
    * works without a server.
    *
-   * opts: { addTo: bool, fullWidth: bool, outline: bool }
+   * opts: { addTo: bool, fullWidth: bool, outline: bool, icons: bool }
    */
   function buildHtmlSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts = {}) {
+    if (opts.icons) {
+      return buildIconSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts);
+    }
+
     const { addTo = true, fullWidth = false, outline = false } = opts;
 
     const icsHref =
