@@ -590,7 +590,7 @@
     const border    = useCustom ? "none" : "1px solid #e0e0e0";
 
     const imgStyle = `width:${px}px;height:${px}px;display:inline;margin:0 4px;border:${border};border-radius:${radius};transition:box-shadow .15s;`;
-    const aStyle   = "display:inline;";
+    const aStyle   = "display:inline;text-decoration:none;";
 
     // Yahoo is text-based, so needs its own SVG builder
     function yahooIcon(bg, textColor) {
