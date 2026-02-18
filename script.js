@@ -456,16 +456,19 @@
    * @param {number} vw    – source viewBox width
    * @param {number} vh    – source viewBox height
    */
-  function svgBrandIcon(bg, paths, vw, vh) {
+  function svgBrandIcon(bg, paths, vw, vh, { rx = 8, fillOverride = null } = {}) {
     const size  = 20;
     const scale = size / Math.max(vw, vh);
     const tx    = (45 - vw * scale) / 2;
     const ty    = (45 - vh * scale) / 2;
+    const rendered = fillOverride
+      ? paths.replace(/fill="[^"]*"/g, `fill="${fillOverride}"`)
+      : paths;
     const svg =
       `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45">` +
-      `<rect width="45" height="45" rx="8" fill="${bg}"/>` +
+      `<rect width="45" height="45" rx="${rx}" fill="${bg}"/>` +
       `<g transform="translate(${tx.toFixed(2)},${ty.toFixed(2)}) scale(${scale.toFixed(4)})">` +
-      paths +
+      rendered +
       `</g>` +
       `</svg>`;
     return "data:image/svg+xml;base64," + btoa(svg);
@@ -572,23 +575,50 @@
    * <p style="font-size:0"> containing inline <a><img></a> links.
    */
   function buildIconSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts) {
-    const { addTo, align = "center", shape = "rounded", size = "36" } = opts;
+    const { addTo, align = "center", shape = "rounded", size = "36",
+            colorMode = "native", accentColor = "#0f766e" } = opts;
     const icsHref = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
     const ta = align === "left" ? "left" : "center";
 
     const ICON_PX = { "28": 32, "32": 38, "36": 45, "40": 50, "44": 56 };
-    const px = ICON_PX[size] ?? 45;
+    const SVG_RX  = { square: 0, rounded: 8, pill: 22.5 };
+    const px     = ICON_PX[size] ?? 45;
     const radius = _RADIUS_MAP[shape] ?? "8px";
+    const rx     = SVG_RX[shape] ?? 8;
 
-    const imgStyle = `width:${px}px;height:${px}px;display:inline;margin:0 4px;border:1px solid #e0e0e0;border-radius:${radius};transition:box-shadow .15s;`;
+    const useCustom = colorMode === "custom";
+    const border    = useCustom ? "none" : "1px solid #e0e0e0";
+
+    const imgStyle = `width:${px}px;height:${px}px;display:inline;margin:0 4px;border:${border};border-radius:${radius};transition:box-shadow .15s;`;
     const aStyle   = "display:inline;";
 
-    const icons = [
-      { href: googleUrl,  src: googleIconUri(),  alt: "Google Calendar", download: false },
-      { href: outlookUrl, src: outlookIconUri(), alt: "Office 365",      download: false },
-      { href: yahooUrl,   src: yahooIconUri(),   alt: "Yahoo Calendar",  download: false },
-      { href: icsHref,    src: appleIconUri(),   alt: "Apple / ICS",     download: true  },
-    ];
+    // Yahoo is text-based, so needs its own SVG builder
+    function yahooIcon(bg, textColor) {
+      const bgRect = bg === "transparent" ? "" : `<rect width="45" height="45" rx="${rx}" fill="${bg}"/>`;
+      return "data:image/svg+xml;base64," + btoa(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45">` +
+        bgRect +
+        `<text x="22.5" y="31" font-family="Arial,sans-serif" font-size="20" font-weight="bold" fill="${textColor}" text-anchor="middle">Y!</text>` +
+        `</svg>`
+      );
+    }
+
+    const io = { rx };                                      // shared icon opts
+    const iw = { rx, fillOverride: "#ffffff" };             // white fill icon opts
+
+    const icons = useCustom
+      ? [
+          { href: googleUrl,  src: svgBrandIcon(accentColor,  _GOOGLE_PATHS,  24, 24, iw),    alt: "Google Calendar", download: false },
+          { href: outlookUrl, src: svgBrandIcon(accentColor,  _OUTLOOK_PATHS, 21, 21, iw),    alt: "Office 365",      download: false },
+          { href: yahooUrl,   src: yahooIcon(accentColor, "#ffffff"),                           alt: "Yahoo Calendar",  download: false },
+          { href: icsHref,    src: svgBrandIcon(accentColor,  _APPLE_PATHS,   24, 24, iw),    alt: "Apple / ICS",     download: true  },
+        ]
+      : [
+          { href: googleUrl,  src: svgBrandIcon("#ffffff",     _GOOGLE_PATHS,  24, 24, io),    alt: "Google Calendar", download: false },
+          { href: outlookUrl, src: svgBrandIcon("#ffffff",     _OUTLOOK_PATHS, 21, 21, io),    alt: "Office 365",      download: false },
+          { href: yahooUrl,   src: yahooIcon("transparent", "#6001d2"),                         alt: "Yahoo Calendar",  download: false },
+          { href: icsHref,    src: svgBrandIcon("transparent", _APPLE_PATHS,   24, 24, io),    alt: "Apple / ICS",     download: true  },
+        ];
 
     const iconLinks = icons.map(({ href, src, alt, download }) => {
       const extra = download ? ` download="event.ics"` : ` target="_blank" rel="noopener"`;
