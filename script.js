@@ -614,10 +614,10 @@
           { href: icsHref,    src: svgBrandIcon(accentColor,  _APPLE_PATHS,   24, 24, iw),    alt: "Apple / ICS",     download: true  },
         ]
       : [
-          { href: googleUrl,  src: svgBrandIcon("#ffffff",     _GOOGLE_PATHS,  24, 24, io),    alt: "Google Calendar", download: false },
-          { href: outlookUrl, src: svgBrandIcon("#ffffff",     _OUTLOOK_PATHS, 21, 21, io),    alt: "Office 365",      download: false },
-          { href: yahooUrl,   src: yahooIcon("transparent", "#6001d2"),                         alt: "Yahoo Calendar",  download: false },
-          { href: icsHref,    src: svgBrandIcon("transparent", _APPLE_PATHS,   24, 24, io),    alt: "Apple / ICS",     download: true  },
+          { href: googleUrl,  src: svgBrandIcon("#ffffff", _GOOGLE_PATHS,  24, 24, io),    alt: "Google Calendar", download: false },
+          { href: outlookUrl, src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 21, 21, io),    alt: "Office 365",      download: false },
+          { href: yahooUrl,   src: yahooIcon("#ffffff", "#6001d2"),                         alt: "Yahoo Calendar",  download: false },
+          { href: icsHref,    src: svgBrandIcon("#ffffff", _APPLE_PATHS,   24, 24, io),    alt: "Apple / ICS",     download: true  },
         ];
 
     const iconLinks = icons.map(({ href, src, alt, download }) => {
