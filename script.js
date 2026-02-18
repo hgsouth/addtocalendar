@@ -480,19 +480,18 @@
       21, 21);
   }
 
-  /** Apple / ICS icon: dark background + white Apple logo silhouette. */
+  /** Apple / ICS icon: no background + black Apple logo silhouette. */
   function appleIconUri() {
-    return svgBrandIcon("#1c1c1e",
-      `<path fill="#ffffff" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.459 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>`,
+    return svgBrandIcon("transparent",
+      `<path fill="#000000" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.459 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>`,
       24, 24);
   }
 
-  /** Yahoo icon: purple background + bold "Y!" text. */
+  /** Yahoo icon: no background, purple "Y!" text. */
   function yahooIconUri() {
     const svg =
       `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45">` +
-      `<rect width="45" height="45" rx="8" fill="#6001d2"/>` +
-      `<text x="22.5" y="31" font-family="Arial,sans-serif" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">Y!</text>` +
+      `<text x="22.5" y="31" font-family="Arial,sans-serif" font-size="20" font-weight="bold" fill="#6001d2" text-anchor="middle">Y!</text>` +
       `</svg>`;
     return "data:image/svg+xml;base64," + btoa(svg);
   }
@@ -506,7 +505,7 @@
     const { addTo } = opts;
     const icsHref = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
 
-    const imgStyle = "width:45px;height:45px;display:inline;margin:0 4px;";
+    const imgStyle = "width:45px;height:45px;display:inline;margin:0 4px;border:1px solid #e0e0e0;border-radius:8px;transition:box-shadow .15s;";
     const aStyle   = "display:inline;";
 
     const icons = [
@@ -520,7 +519,7 @@
       const extra = download ? ` download="event.ics"` : ` target="_blank" rel="noopener"`;
       return (
         `<a href="${escHtmlAttr(href)}"${extra} title="${alt}" style="${aStyle}">` +
-        `<img src="${src}" alt="${alt}" width="45" height="45" border="0" style="${imgStyle}" />` +
+        `<img src="${src}" alt="${alt}" width="45" height="45" border="0" class="atc-icon" style="${imgStyle}" />` +
         `</a>`
       );
     }).join("\n  ");
@@ -529,7 +528,9 @@
       ? `<p style="margin:0 0 10px 0;text-align:center;font-size:16px;font-weight:bold;font-family:sans-serif;color:#000000;">Add to your calendar</p>\n`
       : "";
 
+    const styleBlock = `<style>.atc-icon:hover{box-shadow:0 3px 10px rgba(0,0,0,.15)}</style>\n`;
     return (
+      styleBlock +
       titleP +
       `<p style="margin:0;text-align:center;font-size:0;">\n` +
       `  ${iconLinks}\n` +
