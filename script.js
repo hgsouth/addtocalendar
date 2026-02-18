@@ -110,20 +110,23 @@
     const event = readForm();
     if (!event) return;
 
-    const googleUrl = buildGoogleUrl(event);
-    const outlookUrl = buildOutlookUrl(event);
-    const yahooUrl = buildYahooUrl(event);
-    const icsContent = buildIcs(event);
+    const googleUrl      = buildGoogleUrl(event);
+    const outlookLiveUrl = buildOutlookLiveUrl(event);
+    const outlookUrl     = buildOutlookUrl(event);
+    const yahooUrl       = buildYahooUrl(event);
+    const icsContent     = buildIcs(event);
 
     // Set link hrefs
-    document.getElementById("googleLink").href = googleUrl;
-    document.getElementById("outlookLink").href = outlookUrl;
-    document.getElementById("yahooLink").href = yahooUrl;
+    document.getElementById("googleLink").href      = googleUrl;
+    document.getElementById("outlookLiveLink").href  = outlookLiveUrl;
+    document.getElementById("outlookLink").href      = outlookUrl;
+    document.getElementById("yahooLink").href        = yahooUrl;
 
     // Set embed URLs
-    document.getElementById("googleUrl").value = googleUrl;
-    document.getElementById("outlookUrl").value = outlookUrl;
-    document.getElementById("yahooUrl").value = yahooUrl;
+    document.getElementById("googleUrl").value      = googleUrl;
+    document.getElementById("outlookLiveUrl").value  = outlookLiveUrl;
+    document.getElementById("outlookUrl").value      = outlookUrl;
+    document.getElementById("yahooUrl").value        = yahooUrl;
 
     // ICS download
     document.getElementById("icsDownload").onclick = () => downloadIcs(icsContent, event.title);
@@ -186,13 +189,12 @@
     return `https://www.google.com/calendar/render?${params.toString()}`;
   }
 
-  // ── Office 365 / Outlook ──
-  // Uses the deeplink/compose endpoint (outlook.office.com)
-  function buildOutlookUrl(ev) {
-    const base = "https://outlook.office.com/calendar/deeplink/compose";
+  // ── Outlook URL helpers ──
+  // Shared builder — base differs for personal vs work/school accounts.
+  function _buildOutlookComposeUrl(base, ev) {
     const params = new URLSearchParams();
-    params.set("path", "/calendar/action/compose");
     params.set("rru", "addevent");
+    params.set("path", "/calendar/action/compose");
     params.set("subject", ev.title);
 
     if (ev.allDay) {
@@ -200,7 +202,6 @@
       params.set("enddt", addDays(ev.endDate, 1));
       params.set("allday", "true");
     } else {
-      // Outlook deeplink expects UTC ISO dates with Z suffix
       params.set("startdt", toIsoUtc(ev.startDate, ev.startTime, ev.timezone));
       params.set("enddt", toIsoUtc(ev.endDate, ev.endTime, ev.timezone));
     }
@@ -210,6 +211,18 @@
     if (ev.location) params.set("location", ev.location);
 
     return `${base}?${params.toString()}`;
+  }
+
+  /** Outlook.com — personal Microsoft accounts */
+  function buildOutlookLiveUrl(ev) {
+    return _buildOutlookComposeUrl(
+      "https://outlook.live.com/calendar/0/action/compose", ev);
+  }
+
+  /** Office 365 / Microsoft 365 — work & school accounts */
+  function buildOutlookUrl(ev) {
+    return _buildOutlookComposeUrl(
+      "https://outlook.office.com/calendar/0/action/compose", ev);
   }
 
   // ── Yahoo Calendar ──
@@ -422,11 +435,12 @@
   }
 
   function refreshSnippet() {
-    const googleUrl  = document.getElementById("googleLink").href;
-    const outlookUrl = document.getElementById("outlookLink").href;
-    const yahooUrl   = document.getElementById("yahooLink").href;
+    const googleUrl      = document.getElementById("googleLink").href;
+    const outlookLiveUrl = document.getElementById("outlookLiveLink").href;
+    const outlookUrl     = document.getElementById("outlookLink").href;
+    const yahooUrl       = document.getElementById("yahooLink").href;
     const snippet = buildHtmlSnippet(
-      googleUrl, outlookUrl, yahooUrl, currentIcsContent, getSnippetOpts()
+      googleUrl, outlookLiveUrl, outlookUrl, yahooUrl, currentIcsContent, getSnippetOpts()
     );
     document.getElementById("htmlSnippet").value = snippet;
     document.getElementById("snippetPreview").innerHTML = snippet;
@@ -574,7 +588,7 @@
    * Mirrors the AddEvent.com pattern: optional <p> title, then
    * <p style="font-size:0"> containing inline <a><img></a> links.
    */
-  function buildIconSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts) {
+  function buildIconSnippet(googleUrl, outlookLiveUrl, outlookUrl, yahooUrl, icsContent, opts) {
     const { addTo, align = "center", shape = "rounded", size = "36",
             colorMode = "native", accentColor = "#0f766e" } = opts;
     const icsHref = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
@@ -608,16 +622,18 @@
 
     const icons = useCustom
       ? [
-          { href: googleUrl,  src: svgBrandIcon(accentColor,  _GOOGLE_PATHS,  24, 24, iw),    alt: "Google Calendar", download: false },
-          { href: outlookUrl, src: svgBrandIcon(accentColor,  _OUTLOOK_PATHS, 21, 21, iw),    alt: "Office 365",      download: false },
-          { href: yahooUrl,   src: yahooIcon(accentColor, "#ffffff"),                           alt: "Yahoo Calendar",  download: false },
-          { href: icsHref,    src: svgBrandIcon(accentColor,  _APPLE_PATHS,   24, 24, iw),    alt: "Apple / ICS",     download: true  },
+          { href: googleUrl,      src: svgBrandIcon(accentColor, _GOOGLE_PATHS,  24, 24, iw),  alt: "Google Calendar", download: false },
+          { href: outlookLiveUrl,  src: svgBrandIcon(accentColor, _OUTLOOK_PATHS, 21, 21, iw),  alt: "Outlook.com",     download: false },
+          { href: outlookUrl,      src: svgBrandIcon(accentColor, _OUTLOOK_PATHS, 21, 21, iw),  alt: "Office 365",      download: false },
+          { href: yahooUrl,        src: yahooIcon(accentColor, "#ffffff"),                        alt: "Yahoo Calendar",  download: false },
+          { href: icsHref,         src: svgBrandIcon(accentColor, _APPLE_PATHS,   24, 24, iw),  alt: "Apple / ICS",     download: true  },
         ]
       : [
-          { href: googleUrl,  src: svgBrandIcon("#ffffff", _GOOGLE_PATHS,  24, 24, io),    alt: "Google Calendar", download: false },
-          { href: outlookUrl, src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 21, 21, io),    alt: "Office 365",      download: false },
-          { href: yahooUrl,   src: yahooIcon("#ffffff", "#6001d2"),                         alt: "Yahoo Calendar",  download: false },
-          { href: icsHref,    src: svgBrandIcon("#ffffff", _APPLE_PATHS,   24, 24, io),    alt: "Apple / ICS",     download: true  },
+          { href: googleUrl,      src: svgBrandIcon("#ffffff", _GOOGLE_PATHS,  24, 24, io),  alt: "Google Calendar", download: false },
+          { href: outlookLiveUrl,  src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 21, 21, io),  alt: "Outlook.com",     download: false },
+          { href: outlookUrl,      src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 21, 21, io),  alt: "Office 365",      download: false },
+          { href: yahooUrl,        src: yahooIcon("#ffffff", "#6001d2"),                        alt: "Yahoo Calendar",  download: false },
+          { href: icsHref,         src: svgBrandIcon("#ffffff", _APPLE_PATHS,   24, 24, io),  alt: "Apple / ICS",     download: true  },
         ];
 
     const iconLinks = icons.map(({ href, src, alt, download }) => {
@@ -656,7 +672,7 @@
    * Build a combined icon + text button snippet.
    * Each provider gets one <a> with a small inline icon and a label.
    */
-  function buildIconTextSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts) {
+  function buildIconTextSnippet(googleUrl, outlookLiveUrl, outlookUrl, yahooUrl, icsContent, opts) {
     const {
       addTo       = true,
       fullWidth   = false,
@@ -676,10 +692,11 @@
     const justifyContent = align === "left" ? "flex-start" : "center";
 
     const entries = [
-      { href: googleUrl,  color: "#4285f4", label: prefix + "Google Calendar",        iconUri: googleInlineIconUri(icon, useWhiteIcons),  download: false },
-      { href: outlookUrl, color: "#0078d4", label: prefix + "Office\u00a0365",        iconUri: outlookInlineIconUri(icon, useWhiteIcons), download: false },
-      { href: yahooUrl,   color: "#6001d2", label: prefix + "Yahoo Calendar",         iconUri: yahooInlineIconUri(icon, useWhiteIcons),   download: false },
-      { href: icsHref,    color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", iconUri: appleInlineIconUri(icon, useWhiteIcons),   download: true  },
+      { href: googleUrl,      color: "#4285f4", label: prefix + "Google Calendar",        iconUri: googleInlineIconUri(icon, useWhiteIcons),  download: false },
+      { href: outlookLiveUrl,  color: "#0078d4", label: prefix + "Outlook.com",            iconUri: outlookInlineIconUri(icon, useWhiteIcons), download: false },
+      { href: outlookUrl,      color: "#0078d4", label: prefix + "Office\u00a0365",        iconUri: outlookInlineIconUri(icon, useWhiteIcons), download: false },
+      { href: yahooUrl,        color: "#6001d2", label: prefix + "Yahoo Calendar",         iconUri: yahooInlineIconUri(icon, useWhiteIcons),   download: false },
+      { href: icsHref,         color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", iconUri: appleInlineIconUri(icon, useWhiteIcons),   download: true  },
     ];
 
     const wrapStyle = fullWidth
@@ -713,13 +730,13 @@
    * Main router: delegates to the appropriate snippet builder based on opts.content.
    * opts: { content, outline, shape, size, align, colorMode, accentColor, addTo, fullWidth }
    */
-  function buildHtmlSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts = {}) {
+  function buildHtmlSnippet(googleUrl, outlookLiveUrl, outlookUrl, yahooUrl, icsContent, opts = {}) {
     const content = opts.content ?? "icon-text";
     if (content === "icons-only") {
-      return buildIconSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts);
+      return buildIconSnippet(googleUrl, outlookLiveUrl, outlookUrl, yahooUrl, icsContent, opts);
     }
     if (content === "icon-text") {
-      return buildIconTextSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts);
+      return buildIconTextSnippet(googleUrl, outlookLiveUrl, outlookUrl, yahooUrl, icsContent, opts);
     }
 
     // ── text-only ──
@@ -741,10 +758,11 @@
     const justifyContent = align === "left" ? "flex-start" : "center";
 
     const entries = [
-      { href: googleUrl,  color: "#4285f4", label: prefix + "Google Calendar",        download: false },
-      { href: outlookUrl, color: "#0078d4", label: prefix + "Office\u00a0365",        download: false },
-      { href: yahooUrl,   color: "#6001d2", label: prefix + "Yahoo Calendar",         download: false },
-      { href: icsHref,    color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", download: true  },
+      { href: googleUrl,      color: "#4285f4", label: prefix + "Google Calendar",        download: false },
+      { href: outlookLiveUrl,  color: "#0078d4", label: prefix + "Outlook.com",            download: false },
+      { href: outlookUrl,      color: "#0078d4", label: prefix + "Office\u00a0365",        download: false },
+      { href: yahooUrl,        color: "#6001d2", label: prefix + "Yahoo Calendar",         download: false },
+      { href: icsHref,         color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", download: true  },
     ];
 
     function btnStyle(color) {

@@ -102,11 +102,30 @@
             <div class="card-header">
               <img src="https://res.cdn.office.net/assets/mail/pwa/v1/images/favicons/outlook.ico"
                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+                   alt="Outlook.com" class="calendar-logo" />
+              <div class="calendar-icon-fallback" style="display:none">&#128197;</div>
+              <div class="card-title">
+                <h3>Outlook.com</h3>
+                <span class="badge">Personal</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <a id="outlookLiveLink" href="#" target="_blank" rel="noopener" class="btn-open">Open in Outlook.com</a>
+              <button class="btn-copy" data-target="outlookLiveLink" title="Copy link">
+                <span class="copy-icon">&#128203;</span> Copy Link
+              </button>
+            </div>
+          </div>
+
+          <div class="calendar-card outlook">
+            <div class="card-header">
+              <img src="https://res.cdn.office.net/assets/mail/pwa/v1/images/favicons/outlook.ico"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
                    alt="Office 365" class="calendar-logo" />
               <div class="calendar-icon-fallback" style="display:none">&#128197;</div>
               <div class="card-title">
                 <h3>Office 365</h3>
-                <span class="badge">Microsoft</span>
+                <span class="badge">Work / School</span>
               </div>
             </div>
             <div class="card-actions">
@@ -160,6 +179,13 @@
               <div class="url-row">
                 <input type="text" id="googleUrl" readonly />
                 <button class="btn-copy-url" data-input="googleUrl">Copy</button>
+              </div>
+            </div>
+            <div class="embed-item">
+              <label>Outlook.com URL</label>
+              <div class="url-row">
+                <input type="text" id="outlookLiveUrl" readonly />
+                <button class="btn-copy-url" data-input="outlookLiveUrl">Copy</button>
               </div>
             </div>
             <div class="embed-item">
