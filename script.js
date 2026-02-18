@@ -529,6 +529,11 @@
     `<rect x="0"    y="11.5" width="9.5" height="9.5" fill="#00a4ef"/>` +
     `<rect x="11.5" y="11.5" width="9.5" height="9.5" fill="#ffb900"/>`;
 
+  // Microsoft 365 icon — normalized to a 38.94 × 46.913 viewBox.
+  // Original path coordinates offset by (-469.87, -633.186).
+  const _M365_PATHS =
+    `<path fill="#C84B3C" fill-rule="evenodd" d="m0,37.844,0-28.52,25.229-9.3238,13.711,4.3877,0,38.392-13.711,4.133-25.229-9.0691,25.229,3.0361,0-33.201-16.454,3.8392,0,22.487z"/>`;
+
   const _APPLE_PATHS =
     `<path fill="#000000" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.459 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>`;
 
@@ -554,9 +559,13 @@
   function googleInlineIconUri(size, white) {
     return svgInlineIcon(_GOOGLE_PATHS, 24, 24, size, white ? "#ffffff" : null);
   }
-  /** Microsoft 4-colour tiles, or all-white. */
+  /** Microsoft 4-colour tiles (Outlook.com), or all-white. */
   function outlookInlineIconUri(size, white) {
     return svgInlineIcon(_OUTLOOK_PATHS, 21, 21, size, white ? "#ffffff" : null);
+  }
+  /** Microsoft 365 icon, or all-white. */
+  function m365InlineIconUri(size, white) {
+    return svgInlineIcon(_M365_PATHS, 38.94, 46.913, size, white ? "#ffffff" : null);
   }
   /** Yahoo "Y!" text, white or native purple. */
   function yahooInlineIconUri(size, white) {
@@ -622,18 +631,18 @@
 
     const icons = useCustom
       ? [
-          { href: googleUrl,      src: svgBrandIcon(accentColor, _GOOGLE_PATHS,  24, 24, iw),  alt: "Google Calendar", download: false },
-          { href: outlookLiveUrl,  src: svgBrandIcon(accentColor, _OUTLOOK_PATHS, 21, 21, iw),  alt: "Outlook.com",     download: false },
-          { href: outlookUrl,      src: svgBrandIcon(accentColor, _OUTLOOK_PATHS, 21, 21, iw),  alt: "Office 365",      download: false },
-          { href: yahooUrl,        src: yahooIcon(accentColor, "#ffffff"),                        alt: "Yahoo Calendar",  download: false },
-          { href: icsHref,         src: svgBrandIcon(accentColor, _APPLE_PATHS,   24, 24, iw),  alt: "Apple / ICS",     download: true  },
+          { href: googleUrl,      src: svgBrandIcon(accentColor, _GOOGLE_PATHS,  24,    24,     iw),  alt: "Google Calendar", download: false },
+          { href: outlookLiveUrl,  src: svgBrandIcon(accentColor, _OUTLOOK_PATHS, 21,    21,     iw),  alt: "Outlook.com",     download: false },
+          { href: outlookUrl,      src: svgBrandIcon(accentColor, _M365_PATHS,   38.94, 46.913, iw),  alt: "Office 365",      download: false },
+          { href: yahooUrl,        src: yahooIcon(accentColor, "#ffffff"),                              alt: "Yahoo Calendar",  download: false },
+          { href: icsHref,         src: svgBrandIcon(accentColor, _APPLE_PATHS,   24,    24,     iw),  alt: "Apple / ICS",     download: true  },
         ]
       : [
-          { href: googleUrl,      src: svgBrandIcon("#ffffff", _GOOGLE_PATHS,  24, 24, io),  alt: "Google Calendar", download: false },
-          { href: outlookLiveUrl,  src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 21, 21, io),  alt: "Outlook.com",     download: false },
-          { href: outlookUrl,      src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 21, 21, io),  alt: "Office 365",      download: false },
-          { href: yahooUrl,        src: yahooIcon("#ffffff", "#6001d2"),                        alt: "Yahoo Calendar",  download: false },
-          { href: icsHref,         src: svgBrandIcon("#ffffff", _APPLE_PATHS,   24, 24, io),  alt: "Apple / ICS",     download: true  },
+          { href: googleUrl,      src: svgBrandIcon("#ffffff", _GOOGLE_PATHS,  24,    24,     io),  alt: "Google Calendar", download: false },
+          { href: outlookLiveUrl,  src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 21,    21,     io),  alt: "Outlook.com",     download: false },
+          { href: outlookUrl,      src: svgBrandIcon("#ffffff", _M365_PATHS,   38.94, 46.913, io),  alt: "Office 365",      download: false },
+          { href: yahooUrl,        src: yahooIcon("#ffffff", "#6001d2"),                              alt: "Yahoo Calendar",  download: false },
+          { href: icsHref,         src: svgBrandIcon("#ffffff", _APPLE_PATHS,   24,    24,     io),  alt: "Apple / ICS",     download: true  },
         ];
 
     const iconLinks = icons.map(({ href, src, alt, download }) => {
@@ -694,7 +703,7 @@
     const entries = [
       { href: googleUrl,      color: "#4285f4", label: prefix + "Google Calendar",        iconUri: googleInlineIconUri(icon, useWhiteIcons),  download: false },
       { href: outlookLiveUrl,  color: "#0078d4", label: prefix + "Outlook.com",            iconUri: outlookInlineIconUri(icon, useWhiteIcons), download: false },
-      { href: outlookUrl,      color: "#0078d4", label: prefix + "Office\u00a0365",        iconUri: outlookInlineIconUri(icon, useWhiteIcons), download: false },
+      { href: outlookUrl,      color: "#C84B3C", label: prefix + "Office\u00a0365",        iconUri: m365InlineIconUri(icon, useWhiteIcons),    download: false },
       { href: yahooUrl,        color: "#6001d2", label: prefix + "Yahoo Calendar",         iconUri: yahooInlineIconUri(icon, useWhiteIcons),   download: false },
       { href: icsHref,         color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", iconUri: appleInlineIconUri(icon, useWhiteIcons),   download: true  },
     ];
@@ -760,7 +769,7 @@
     const entries = [
       { href: googleUrl,      color: "#4285f4", label: prefix + "Google Calendar",        download: false },
       { href: outlookLiveUrl,  color: "#0078d4", label: prefix + "Outlook.com",            download: false },
-      { href: outlookUrl,      color: "#0078d4", label: prefix + "Office\u00a0365",        download: false },
+      { href: outlookUrl,      color: "#C84B3C", label: prefix + "Office\u00a0365",        download: false },
       { href: yahooUrl,        color: "#6001d2", label: prefix + "Yahoo Calendar",         download: false },
       { href: icsHref,         color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", download: true  },
     ];
