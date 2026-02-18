@@ -467,6 +467,62 @@ textarea {
   background: rgba(74, 108, 247, 0.07);
 }
 
+/* Shape / align icon-only pills: tighter padding, no gap */
+.shape-opt {
+  padding: 5px 8px;
+  gap: 4px;
+}
+
+/* Style dropdown */
+.snippet-select {
+  padding: 4px 8px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.snippet-select:focus {
+  border-color: var(--color-primary);
+}
+
+/* Color swatch — hidden until "custom" radio is checked */
+.color-swatch-wrap {
+  display: none;
+  align-items: center;
+}
+.snippet-opt-group:has(input[name="snippetColor"][value="custom"]:checked) .color-swatch-wrap {
+  display: flex;
+}
+
+#snippetAccent {
+  width: 30px;
+  height: 26px;
+  padding: 2px 3px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+  background: none;
+  transition: border-color 0.15s;
+}
+#snippetAccent:hover {
+  border-color: var(--color-primary);
+}
+
+/* Wrap the options grid into two columns on wider screens */
+@media (min-width: 560px) {
+  .snippet-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 24px;
+  }
+}
+
 .snippet-preview {
   display: flex;
   flex-wrap: wrap;

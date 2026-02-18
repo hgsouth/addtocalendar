@@ -184,22 +184,82 @@
           <p>Paste this into any webpage to give visitors a set of "Add to Calendar" buttons — no dependencies required.</p>
 
           <div class="snippet-options">
+
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Style</span>
+              <select id="snippetContent" class="snippet-select">
+                <option value="icon-text">Icon + Text</option>
+                <option value="text-only">Text only</option>
+                <option value="icons-only">Icons only</option>
+              </select>
+            </div>
+
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Fill</span>
+              <label class="snippet-opt"><input type="radio" name="snippetStyle" value="filled" checked /> Filled</label>
+              <label class="snippet-opt"><input type="radio" name="snippetStyle" value="outline" /> Outline</label>
+            </div>
+
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Shape</span>
+              <label class="snippet-opt shape-opt" title="Square">
+                <input type="radio" name="snippetShape" value="square" />
+                <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true"><rect x="1.5" y="1.5" width="12" height="12" rx="0" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+              </label>
+              <label class="snippet-opt shape-opt" title="Rounded">
+                <input type="radio" name="snippetShape" value="rounded" checked />
+                <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true"><rect x="1.5" y="1.5" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+              </label>
+              <label class="snippet-opt shape-opt" title="Pill">
+                <input type="radio" name="snippetShape" value="pill" />
+                <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true"><rect x="1.5" y="4" width="12" height="7" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+              </label>
+            </div>
+
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Size</span>
+              <label class="snippet-opt"><input type="radio" name="snippetSize" value="28" /> 28</label>
+              <label class="snippet-opt"><input type="radio" name="snippetSize" value="32" /> 32</label>
+              <label class="snippet-opt"><input type="radio" name="snippetSize" value="36" checked /> 36</label>
+              <label class="snippet-opt"><input type="radio" name="snippetSize" value="40" /> 40</label>
+              <label class="snippet-opt"><input type="radio" name="snippetSize" value="44" /> 44</label>
+            </div>
+
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Align</span>
+              <label class="snippet-opt shape-opt" title="Left">
+                <input type="radio" name="snippetAlign" value="left" />
+                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><line x1="1" y1="2.5" x2="13" y2="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="1" y1="7" x2="9" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="1" y1="11.5" x2="11" y2="11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Left
+              </label>
+              <label class="snippet-opt shape-opt" title="Center">
+                <input type="radio" name="snippetAlign" value="center" checked />
+                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><line x1="1" y1="2.5" x2="13" y2="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="3" y1="7" x2="11" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="11.5" x2="12" y2="11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Center
+              </label>
+            </div>
+
+            <div class="snippet-opt-group">
+              <span class="snippet-opt-label">Color</span>
+              <label class="snippet-opt"><input type="radio" name="snippetColor" value="native" checked /> Native</label>
+              <label class="snippet-opt"><input type="radio" name="snippetColor" value="custom" /> Custom</label>
+              <span class="color-swatch-wrap">
+                <input type="color" id="snippetAccent" value="#0f766e" title="Custom accent colour" />
+              </span>
+            </div>
+
             <div class="snippet-opt-group">
               <span class="snippet-opt-label">Text</span>
               <label class="snippet-opt"><input type="radio" name="snippetText" value="addto" checked /> With "Add to"</label>
               <label class="snippet-opt"><input type="radio" name="snippetText" value="plain" /> Name only</label>
             </div>
+
             <div class="snippet-opt-group">
               <span class="snippet-opt-label">Width</span>
               <label class="snippet-opt"><input type="radio" name="snippetWidth" value="auto" checked /> Auto</label>
               <label class="snippet-opt"><input type="radio" name="snippetWidth" value="full" /> Full width</label>
             </div>
-            <div class="snippet-opt-group">
-              <span class="snippet-opt-label">Look</span>
-              <label class="snippet-opt"><input type="radio" name="snippetLook" value="filled" checked /> Filled</label>
-              <label class="snippet-opt"><input type="radio" name="snippetLook" value="outline" /> Outline</label>
-              <label class="snippet-opt"><input type="radio" name="snippetLook" value="icons" /> Icons</label>
-            </div>
+
           </div>
 
           <div class="snippet-preview" id="snippetPreview" aria-label="Button preview"></div>
