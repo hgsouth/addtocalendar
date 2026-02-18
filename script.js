@@ -439,19 +439,52 @@
 
   // ── Icon Snippet Builder ──
   /**
-   * Return a base64 SVG data URI for a 45×45 calendar icon with the given
-   * brand background colour.
+   * Shared helper: 45×45 rounded-square icon with a centred brand logo.
+   * @param {string} bg    – background fill colour
+   * @param {string} paths – inner SVG elements (paths, rects, …)
+   * @param {number} vw    – source viewBox width
+   * @param {number} vh    – source viewBox height
    */
-  function calIconUri(bg) {
+  function svgBrandIcon(bg, paths, vw, vh) {
+    const size  = 20;
+    const scale = size / Math.max(vw, vh);
+    const tx    = (45 - vw * scale) / 2;
+    const ty    = (45 - vh * scale) / 2;
     const svg =
       `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45">` +
       `<rect width="45" height="45" rx="8" fill="${bg}"/>` +
-      `<rect x="11" y="15" width="23" height="19" rx="2" fill="none" stroke="#fff" stroke-width="2"/>` +
-      `<line x1="11" y1="22" x2="34" y2="22" stroke="#fff" stroke-width="2"/>` +
-      `<line x1="18" y1="12" x2="18" y2="18" stroke="#fff" stroke-width="2" stroke-linecap="round"/>` +
-      `<line x1="27" y1="12" x2="27" y2="18" stroke="#fff" stroke-width="2" stroke-linecap="round"/>` +
+      `<g transform="translate(${tx.toFixed(2)},${ty.toFixed(2)}) scale(${scale.toFixed(4)})">` +
+      paths +
+      `</g>` +
       `</svg>`;
     return "data:image/svg+xml;base64," + btoa(svg);
+  }
+
+  /** Google Calendar icon: white background + 4-colour Google G logo. */
+  function googleIconUri() {
+    return svgBrandIcon("#ffffff",
+      `<path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>` +
+      `<path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>` +
+      `<path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>` +
+      `<path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>`,
+      24, 24);
+  }
+
+  /** Office 365 icon: white background + Microsoft 4-colour tile logo. */
+  function outlookIconUri() {
+    return svgBrandIcon("#ffffff",
+      `<rect x="0"    y="0"    width="9.5" height="9.5" fill="#f25022"/>` +
+      `<rect x="11.5" y="0"    width="9.5" height="9.5" fill="#7fba00"/>` +
+      `<rect x="0"    y="11.5" width="9.5" height="9.5" fill="#00a4ef"/>` +
+      `<rect x="11.5" y="11.5" width="9.5" height="9.5" fill="#ffb900"/>`,
+      21, 21);
+  }
+
+  /** Apple / ICS icon: dark background + white Apple logo silhouette. */
+  function appleIconUri() {
+    return svgBrandIcon("#1c1c1e",
+      `<path fill="#ffffff" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.459 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>`,
+      24, 24);
   }
 
   /** Yahoo icon: purple background + bold "Y!" text. */
@@ -477,10 +510,10 @@
     const aStyle   = "display:inline;";
 
     const icons = [
-      { href: googleUrl,  src: calIconUri("#4285f4"), alt: "Google Calendar", download: false },
-      { href: outlookUrl, src: calIconUri("#0078d4"), alt: "Office 365",      download: false },
-      { href: yahooUrl,   src: yahooIconUri(),        alt: "Yahoo Calendar",  download: false },
-      { href: icsHref,    src: calIconUri("#1c1c1e"), alt: "Apple / ICS",     download: true  },
+      { href: googleUrl,  src: googleIconUri(),  alt: "Google Calendar", download: false },
+      { href: outlookUrl, src: outlookIconUri(), alt: "Office 365",      download: false },
+      { href: yahooUrl,   src: yahooIconUri(),   alt: "Yahoo Calendar",  download: false },
+      { href: icsHref,    src: appleIconUri(),   alt: "Apple / ICS",     download: true  },
     ];
 
     const iconLinks = icons.map(({ href, src, alt, download }) => {
