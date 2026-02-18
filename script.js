@@ -572,11 +572,15 @@
    * <p style="font-size:0"> containing inline <a><img></a> links.
    */
   function buildIconSnippet(googleUrl, outlookUrl, yahooUrl, icsContent, opts) {
-    const { addTo, align = "center" } = opts;
+    const { addTo, align = "center", shape = "rounded", size = "36" } = opts;
     const icsHref = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsContent);
     const ta = align === "left" ? "left" : "center";
 
-    const imgStyle = "width:45px;height:45px;display:inline;margin:0 4px;border:1px solid #e0e0e0;border-radius:8px;transition:box-shadow .15s;";
+    const ICON_PX = { "28": 32, "32": 38, "36": 45, "40": 50, "44": 56 };
+    const px = ICON_PX[size] ?? 45;
+    const radius = _RADIUS_MAP[shape] ?? "8px";
+
+    const imgStyle = `width:${px}px;height:${px}px;display:inline;margin:0 4px;border:1px solid #e0e0e0;border-radius:${radius};transition:box-shadow .15s;`;
     const aStyle   = "display:inline;";
 
     const icons = [
@@ -590,7 +594,7 @@
       const extra = download ? ` download="event.ics"` : ` target="_blank" rel="noopener"`;
       return (
         `<a href="${escHtmlAttr(href)}"${extra} title="${alt}" style="${aStyle}">` +
-        `<img src="${src}" alt="${alt}" width="45" height="45" border="0" class="atc-icon" style="${imgStyle}" />` +
+        `<img src="${src}" alt="${alt}" width="${px}" height="${px}" border="0" class="atc-icon" style="${imgStyle}" />` +
         `</a>`
       );
     }).join("\n  ");
