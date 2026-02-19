@@ -523,11 +523,15 @@
     `<path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>` +
     `<path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>`;
 
+  // Outlook.com icon — viewBox 0 0 103.17322 104.31332.
+  // style="fill:..." converted to fill="...", Inkscape attrs stripped.
   const _OUTLOOK_PATHS =
-    `<rect x="0"    y="0"    width="9.5" height="9.5" fill="#f25022"/>` +
-    `<rect x="11.5" y="0"    width="9.5" height="9.5" fill="#7fba00"/>` +
-    `<rect x="0"    y="11.5" width="9.5" height="9.5" fill="#00a4ef"/>` +
-    `<rect x="11.5" y="11.5" width="9.5" height="9.5" fill="#ffb900"/>`;
+    `<path fill="#0072c6" d="m64.566509,22.116383v20.404273l7.130526,4.489881c0.188058,0.05485,0.595516,0.05877,0.783574,0L103.16929,26.320259c0,-2.44867,-2.28412,-4.203876,-3.573094,-4.203876H64.566509z"/>` +
+    `<path fill="#0072c6" d="m64.566509,50.13308l6.507584,4.470291c0.916782,0.673874,2.021622,0,2.021622,0-1.100922,0.673874,30.077495,-20.035993,30.077495,-20.035993v37.501863c0,4.082422,-2.61322,5.794531,-5.551621,5.794531H64.562591V50.13308z"/>` +
+    `<g transform="matrix(3.9178712,0,0,3.9178712,-13.481403,-41.384473)">` +
+    `<path fill="#0072c6" d="m11.321,20.958c-0.566,0-1.017,0.266-1.35,0.797-0.333,0.531-0.5,1.234-0.5,2.109,0,0.888,0.167,1.59,0.5,2.106,0.333,0.517,0.77,0.774,1.31,0.774,0.557,0,0.999,-0.251,1.325,-0.753,0.326,-0.502,0.49,-1.199,0.49,-2.09,0,-0.929,-0.158,-1.652,-0.475,-2.169-0.317,-0.516-0.75,-0.774-1.3,-0.774z"/>` +
+    `<path fill="#0072c6" d="m3.441,13.563v20.375l15.5,3.25V10.563l-15.5,3zm10.372,13.632c-0.655,0.862-1.509,1.294-2.563,1.294-1.027,0-1.863,-0.418-2.51,-1.253C8.094,26.4,7.77,25.312,7.77,23.97c0,-1.417,0.328,-2.563,0.985,-3.438,0.657,-0.875,1.527,-1.313,2.61,-1.313,1.023,0,1.851,0.418,2.482,1.256,0.632,0.838,0.948,1.942,0.948,3.313,0.001,1.409,-0.327,2.545,-0.982,3.407z"/>` +
+    `</g>`;
 
   // Microsoft 365 icon — normalized to a 38.94 × 46.913 viewBox.
   // Original path coordinates offset by (-469.87, -633.186).
@@ -561,7 +565,7 @@
   }
   /** Microsoft 4-colour tiles (Outlook.com), or all-white. */
   function outlookInlineIconUri(size, white) {
-    return svgInlineIcon(_OUTLOOK_PATHS, 21, 21, size, white ? "#ffffff" : null);
+    return svgInlineIcon(_OUTLOOK_PATHS, 103.17322, 104.31332, size, white ? "#ffffff" : null);
   }
   /** Microsoft 365 icon, or all-white. */
   function m365InlineIconUri(size, white) {
@@ -632,14 +636,14 @@
     const icons = useCustom
       ? [
           { href: googleUrl,      src: svgBrandIcon(accentColor, _GOOGLE_PATHS,  24,    24,     iw),  alt: "Google Calendar", download: false },
-          { href: outlookLiveUrl,  src: svgBrandIcon(accentColor, _OUTLOOK_PATHS, 21,    21,     iw),  alt: "Outlook.com",     download: false },
+          { href: outlookLiveUrl,  src: svgBrandIcon(accentColor, _OUTLOOK_PATHS, 103.17322, 104.31332, iw),  alt: "Outlook.com",     download: false },
           { href: outlookUrl,      src: svgBrandIcon(accentColor, _M365_PATHS,   38.94, 46.913, iw),  alt: "Office 365",      download: false },
           { href: yahooUrl,        src: yahooIcon(accentColor, "#ffffff"),                              alt: "Yahoo Calendar",  download: false },
           { href: icsHref,         src: svgBrandIcon(accentColor, _APPLE_PATHS,   24,    24,     iw),  alt: "Apple / ICS",     download: true  },
         ]
       : [
           { href: googleUrl,      src: svgBrandIcon("#ffffff", _GOOGLE_PATHS,  24,    24,     io),  alt: "Google Calendar", download: false },
-          { href: outlookLiveUrl,  src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 21,    21,     io),  alt: "Outlook.com",     download: false },
+          { href: outlookLiveUrl,  src: svgBrandIcon("#ffffff", _OUTLOOK_PATHS, 103.17322, 104.31332, io),  alt: "Outlook.com",     download: false },
           { href: outlookUrl,      src: svgBrandIcon("#ffffff", _M365_PATHS,   38.94, 46.913, io),  alt: "Office 365",      download: false },
           { href: yahooUrl,        src: yahooIcon("#ffffff", "#6001d2"),                              alt: "Yahoo Calendar",  download: false },
           { href: icsHref,         src: svgBrandIcon("#ffffff", _APPLE_PATHS,   24,    24,     io),  alt: "Apple / ICS",     download: true  },
@@ -702,7 +706,7 @@
 
     const entries = [
       { href: googleUrl,      color: "#4285f4", label: prefix + "Google Calendar",        iconUri: googleInlineIconUri(icon, useWhiteIcons),  download: false },
-      { href: outlookLiveUrl,  color: "#0078d4", label: prefix + "Outlook.com",            iconUri: outlookInlineIconUri(icon, useWhiteIcons), download: false },
+      { href: outlookLiveUrl,  color: "#0072c6", label: prefix + "Outlook.com",            iconUri: outlookInlineIconUri(icon, useWhiteIcons), download: false },
       { href: outlookUrl,      color: "#C84B3C", label: prefix + "Office\u00a0365",        iconUri: m365InlineIconUri(icon, useWhiteIcons),    download: false },
       { href: yahooUrl,        color: "#6001d2", label: prefix + "Yahoo Calendar",         iconUri: yahooInlineIconUri(icon, useWhiteIcons),   download: false },
       { href: icsHref,         color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", iconUri: appleInlineIconUri(icon, useWhiteIcons),   download: true  },
@@ -768,7 +772,7 @@
 
     const entries = [
       { href: googleUrl,      color: "#4285f4", label: prefix + "Google Calendar",        download: false },
-      { href: outlookLiveUrl,  color: "#0078d4", label: prefix + "Outlook.com",            download: false },
+      { href: outlookLiveUrl,  color: "#0072c6", label: prefix + "Outlook.com",            download: false },
       { href: outlookUrl,      color: "#C84B3C", label: prefix + "Office\u00a0365",        download: false },
       { href: yahooUrl,        color: "#6001d2", label: prefix + "Yahoo Calendar",         download: false },
       { href: icsHref,         color: "#1c1c1e", label: prefix + "Apple\u00a0/\u00a0ICS", download: true  },
