@@ -33,9 +33,30 @@ body {
 }
 
 .container {
-  max-width: 740px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 24px 16px 48px;
+}
+
+/* ─── Two-column main layout ─── */
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 28px;
+  align-items: start;
+}
+
+/* Go two-column when the saved events sidebar is visible */
+@media (min-width: 1000px) {
+  main:has(.saved-events-section:not([hidden])) {
+    grid-template-columns: 1fr 320px;
+  }
+}
+
+.main-left {
+  min-width: 0;
+  max-width: 740px;
+  width: 100%;
 }
 
 /* ─── Header ─── */
@@ -570,8 +591,11 @@ textarea {
   background: var(--color-surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
-  margin-bottom: 28px;
   overflow: hidden;
+  /* Sidebar: stick to viewport top while form/output scrolls */
+  position: sticky;
+  top: 24px;
+  align-self: start;
 }
 
 .saved-events-toggle {
@@ -772,6 +796,7 @@ footer {
   .card-actions { flex-direction: column; }
   .btn-open { width: 100%; }
   .btn-copy { justify-content: center; }
+  .main-left { max-width: 100%; }
   .saved-event-card { flex-direction: column; align-items: flex-start; gap: 10px; }
   .saved-event-actions { width: 100%; }
   .btn-load-event, .btn-delete-event { flex: 1; text-align: center; }

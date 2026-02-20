@@ -17,18 +17,7 @@
     </header>
 
     <main>
-      <section class="saved-events-section" id="savedEventsSection" hidden>
-        <button class="saved-events-toggle" id="savedEventsToggle" type="button">
-          <span id="savedEventsHeading">Saved Events (0)</span>
-          <span class="toggle-chevron" id="savedEventsChevron">&#9660;</span>
-        </button>
-        <div class="saved-events-list" id="savedEventsList">
-          <p class="saved-events-empty" id="savedEventsEmpty">
-            No saved events yet. Generate an event and click Save to store it.
-          </p>
-        </div>
-      </section>
-
+      <div class="main-left">
       <section class="form-section">
         <h2>Event Details</h2>
         <form id="eventForm">
@@ -308,6 +297,19 @@
           <button class="btn-copy-html" id="copyHtmlSnippet">&#128203; Copy HTML</button>
         </div>
 
+      </section>
+      </div><!-- /.main-left -->
+
+      <section class="saved-events-section" id="savedEventsSection" hidden>
+        <button class="saved-events-toggle" id="savedEventsToggle" type="button">
+          <span id="savedEventsHeading">Saved Events (0)</span>
+          <span class="toggle-chevron" id="savedEventsChevron">&#9660;</span>
+        </button>
+        <div class="saved-events-list" id="savedEventsList">
+          <p class="saved-events-empty" id="savedEventsEmpty">
+            No saved events yet. Generate an event and click Save to store it.
+          </p>
+        </div>
       </section>
     </main>
 

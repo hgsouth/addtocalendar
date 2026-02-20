@@ -32,26 +32,22 @@
 
   // ── Timezone List ──
   function populateTimezones() {
-    let zones;
-    try {
-      zones = Intl.supportedValuesOf("timeZone");
-    } catch {
-      zones = [
-        "America/New_York", "America/Chicago", "America/Denver",
-        "America/Los_Angeles", "America/Anchorage", "Pacific/Honolulu",
-        "Europe/London", "Europe/Paris", "Europe/Berlin",
-        "Asia/Tokyo", "Asia/Shanghai", "Asia/Kolkata",
-        "Australia/Sydney", "Pacific/Auckland", "UTC"
-      ];
-    }
-
+    const US_ZONES = [
+      { id: "America/Los_Angeles", label: "Pacific"  },
+      { id: "America/Denver",      label: "Mountain" },
+      { id: "America/Chicago",     label: "Central"  },
+      { id: "America/New_York",    label: "Eastern"  },
+    ];
     const localZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const defaultZone = US_ZONES.some((z) => z.id === localZone)
+      ? localZone
+      : "America/Los_Angeles";
 
-    zones.forEach((tz) => {
+    US_ZONES.forEach(({ id, label }) => {
       const opt = document.createElement("option");
-      opt.value = tz;
-      opt.textContent = tz.replace(/_/g, " ");
-      if (tz === localZone) opt.selected = true;
+      opt.value = id;
+      opt.textContent = label;
+      opt.selected = (id === defaultZone);
       timezoneSelect.appendChild(opt);
     });
   }
