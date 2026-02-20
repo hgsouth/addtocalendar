@@ -18,10 +18,17 @@
   const endTimeInput = document.getElementById("endTime");
   const toast = document.getElementById("toast");
 
+  // ── Saved Events state ──
+  const STORAGE_KEY = "atc_saved_events";
+  const MAX_SAVED   = 50;
+  let currentLoadedEventId = null;
+  let isAutoSubmitting     = false;
+
   // ── Initialise ──
   populateTimezones();
   setDefaults();
   bindEvents();
+  renderSavedEventsList();
 
   // ── Timezone List ──
   function populateTimezones() {
@@ -93,6 +100,44 @@
     document.getElementById("snippetAccent")?.addEventListener("input", () => {
       if (!outputSection.hidden) refreshSnippet();
     });
+
+    // Saved events: toggle collapse
+    document.getElementById("savedEventsToggle").addEventListener("click", () => {
+      const list    = document.getElementById("savedEventsList");
+      const chevron = document.getElementById("savedEventsChevron");
+      const isOpen  = list.style.display !== "none";
+      list.style.display    = isOpen ? "none" : "";
+      chevron.style.transform = isOpen ? "rotate(-90deg)" : "";
+    });
+
+    // Save / update event button
+    document.getElementById("saveEventBtn").addEventListener("click", saveCurrentEvent);
+
+    // Delegate Load / Delete clicks inside the saved list
+    document.getElementById("savedEventsList").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const id     = btn.dataset.id;
+      if (action === "load") {
+        loadSavedEvent(id);
+      } else if (action === "delete") {
+        if (btn.dataset.confirming === "1") {
+          deleteSavedEvent(id);
+        } else {
+          btn.dataset.confirming = "1";
+          btn.textContent = "Confirm?";
+          btn.classList.add("confirming");
+          setTimeout(() => {
+            if (btn.dataset.confirming === "1") {
+              delete btn.dataset.confirming;
+              btn.textContent = "Delete";
+              btn.classList.remove("confirming");
+            }
+          }, 3000);
+        }
+      }
+    });
   }
 
   function toggleAllDay() {
@@ -106,6 +151,11 @@
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    // Manual submit breaks any loaded-event association
+    if (!isAutoSubmitting) {
+      currentLoadedEventId = null;
+    }
 
     const event = readForm();
     if (!event) return;
@@ -143,6 +193,7 @@
 
     // Show output
     outputSection.hidden = false;
+    updateSaveButtonState();
     outputSection.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -862,5 +913,186 @@
     toast.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+  }
+
+  // ── Saved Events: Storage ──
+  function getSavedEvents() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  function setSavedEvents(events) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+  }
+
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+
+  // ── Saved Events: Save / Update ──
+  function saveCurrentEvent() {
+    const ev   = readForm();
+    const opts = getSnippetOpts();
+    if (!ev) {
+      showToast("Fill in the event details first.");
+      return;
+    }
+
+    const events = getSavedEvents();
+
+    if (currentLoadedEventId) {
+      // Update existing entry in place
+      const idx = events.findIndex((e) => e.id === currentLoadedEventId);
+      if (idx !== -1) {
+        events[idx] = { id: currentLoadedEventId, savedAt: new Date().toISOString(), event: ev, opts };
+        setSavedEvents(events);
+        renderSavedEventsList();
+        showToast("Event updated!");
+        return;
+      }
+    }
+
+    // New entry — prepend, cap at MAX_SAVED
+    const entry = { id: generateId(), savedAt: new Date().toISOString(), event: ev, opts };
+    events.unshift(entry);
+    if (events.length > MAX_SAVED) events.splice(MAX_SAVED);
+    setSavedEvents(events);
+    currentLoadedEventId = entry.id;
+    updateSaveButtonState();
+    renderSavedEventsList();
+    showToast("Event saved!");
+  }
+
+  // ── Saved Events: Delete ──
+  function deleteSavedEvent(id) {
+    const events = getSavedEvents().filter((e) => e.id !== id);
+    setSavedEvents(events);
+    if (currentLoadedEventId === id) {
+      currentLoadedEventId = null;
+      updateSaveButtonState();
+    }
+    renderSavedEventsList();
+    showToast("Event deleted.");
+  }
+
+  // ── Saved Events: Load ──
+  function loadSavedEvent(id) {
+    const entry = getSavedEvents().find((e) => e.id === id);
+    if (!entry) return;
+
+    populateForm(entry.event);
+    populateOpts(entry.opts);
+    currentLoadedEventId = id;
+
+    // Auto-submit to regenerate links and snippet
+    isAutoSubmitting = true;
+    form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+    isAutoSubmitting = false;
+
+    renderSavedEventsList();
+    showToast("Event loaded!");
+  }
+
+  // ── Saved Events: Populate form fields ──
+  function populateForm(ev) {
+    document.getElementById("title").value       = ev.title       ?? "";
+    document.getElementById("description").value = ev.description ?? "";
+    document.getElementById("location").value    = ev.location    ?? "";
+
+    allDayCheckbox.checked = !!ev.allDay;
+    toggleAllDay();
+
+    startDateInput.value = ev.startDate ?? "";
+    endDateInput.value   = ev.endDate   ?? "";
+    startTimeInput.value = ev.startTime ?? "";
+    endTimeInput.value   = ev.endTime   ?? "";
+
+    if (ev.timezone) {
+      timezoneSelect.value = ev.timezone;
+    }
+  }
+
+  // ── Saved Events: Populate snippet options ──
+  function populateOpts(opts) {
+    if (!opts) return;
+
+    const setRadio = (name, val) => {
+      const el = document.querySelector(`input[name="${name}"][value="${val}"]`);
+      if (el) el.checked = true;
+    };
+
+    document.getElementById("snippetContent").value = opts.content ?? "icon-text";
+    setRadio("snippetStyle",  opts.outline   ? "outline" : "filled");
+    setRadio("snippetShape",  opts.shape     ?? "rounded");
+    setRadio("snippetSize",   opts.size      ?? "36");
+    setRadio("snippetAlign",  opts.align     ?? "center");
+    setRadio("snippetColor",  opts.colorMode ?? "native");
+    setRadio("snippetText",   opts.addTo     ? "addto" : "plain");
+    setRadio("snippetWidth",  opts.fullWidth ? "full"  : "auto");
+
+    if (opts.accentColor) {
+      document.getElementById("snippetAccent").value = opts.accentColor;
+    }
+  }
+
+  // ── Saved Events: Render list ──
+  function renderSavedEventsList() {
+    const section  = document.getElementById("savedEventsSection");
+    const list     = document.getElementById("savedEventsList");
+    const empty    = document.getElementById("savedEventsEmpty");
+    const heading  = document.getElementById("savedEventsHeading");
+    const events   = getSavedEvents();
+
+    heading.textContent = `Saved Events (${events.length})`;
+
+    if (events.length === 0) {
+      section.hidden = true;
+      empty.style.display = "";
+      // Remove all cards
+      list.querySelectorAll(".saved-event-card").forEach((el) => el.remove());
+      return;
+    }
+
+    section.hidden = false;
+    empty.style.display = "none";
+
+    // Rebuild card list
+    list.querySelectorAll(".saved-event-card").forEach((el) => el.remove());
+
+    events.forEach((entry) => {
+      const ev       = entry.event;
+      const isLoaded = entry.id === currentLoadedEventId;
+      const date     = ev.allDay
+        ? ev.startDate
+        : `${ev.startDate} ${ev.startTime}`;
+
+      const card = document.createElement("div");
+      card.className = "saved-event-card" + (isLoaded ? " is-loaded" : "");
+      card.innerHTML =
+        `<div class="saved-event-info">` +
+          `<span class="saved-event-title">${escHtmlAttr(ev.title)}</span>` +
+          `<span class="saved-event-date">${escHtmlAttr(date)}</span>` +
+        `</div>` +
+        `<div class="saved-event-actions">` +
+          `<button class="btn-load-event${isLoaded ? " active" : ""}" ` +
+            `data-action="load" data-id="${entry.id}">` +
+            (isLoaded ? "Loaded" : "Load") +
+          `</button>` +
+          `<button class="btn-delete-event" data-action="delete" data-id="${entry.id}">Delete</button>` +
+        `</div>`;
+      list.appendChild(card);
+    });
+  }
+
+  // ── Saved Events: Save button label ──
+  function updateSaveButtonState() {
+    const btn = document.getElementById("saveEventBtn");
+    if (!btn) return;
+    btn.textContent = currentLoadedEventId
+      ? "\uD83D\uDCBE Update Event"
+      : "\uD83D\uDCBE Save Event";
   }
 })();

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add To Calendar Creator</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#4a6cf7" />
 </head>
 <body>
   <div class="container">
@@ -15,6 +17,18 @@
     </header>
 
     <main>
+      <section class="saved-events-section" id="savedEventsSection" hidden>
+        <button class="saved-events-toggle" id="savedEventsToggle" type="button">
+          <span id="savedEventsHeading">Saved Events (0)</span>
+          <span class="toggle-chevron" id="savedEventsChevron">&#9660;</span>
+        </button>
+        <div class="saved-events-list" id="savedEventsList">
+          <p class="saved-events-empty" id="savedEventsEmpty">
+            No saved events yet. Generate an event and click Save to store it.
+          </p>
+        </div>
+      </section>
+
       <section class="form-section">
         <h2>Event Details</h2>
         <form id="eventForm">
@@ -76,6 +90,7 @@
       <section class="output-section" id="outputSection" hidden>
         <h2>Your Calendar Links</h2>
         <p class="output-subtitle">Click a button to open the calendar, or copy the link to embed anywhere.</p>
+        <button class="btn-save-event" id="saveEventBtn" type="button">&#128190; Save Event</button>
 
         <div class="calendar-cards">
 
@@ -304,5 +319,10 @@
   <div id="toast" class="toast" aria-live="polite"></div>
 
   <script src="script.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js");
+    }
+  </script>
 </body>
 </html>

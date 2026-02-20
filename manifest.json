@@ -1,0 +1,22 @@
+{
+  "name": "Add To Calendar Creator",
+  "short_name": "Cal Creator",
+  "description": "Generate calendar links for Google, Outlook, Office 365, Yahoo, and Apple Calendar",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#4a6cf7",
+  "background_color": "#f5f6fa",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
